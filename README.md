@@ -2,18 +2,16 @@
 
 Telegram bot that summarizes recent group messages with `/context N`. It also supports `/context all N` in one configured group.
 
-The production bot runs in [Val Town](https://www.val.town/x/brywhit/context-recap-bot). The HTTP endpoint is the existing `main.ts` trigger. Message history is stored in the val's private SQLite database; this repository contains code only.
+The production bot runs in [Val Town](https://www.val.town/x/brywhit/context-recap-bot). This repository contains the source of its existing `main.ts` HTTP handler. Message history stays in the val's private SQLite database; Telegram and DeepSeek keys stay in its private environment variables.
 
 ## Contributing
 
-Open a pull request against `main`. Tests run on pull requests. Once the owner merges a PR, GitHub Actions deploys `main.ts` to the existing Val Town project and verifies that the deployed file matches the commit. Changes to this file can affect all chats using the bot, so review each PR before merging.
+Fork this repository and open a pull request against `main`. The owner reviews and merges accepted changes. A signed GitHub webhook then asks a [separate Val Town deployer](https://www.val.town/x/brywhit/context-recap-deployer/code/sync.ts) to update the existing bot's `main.ts`. The bot's HTTP address and saved messages stay in place. The deployer checks the webhook signature, repository, branch and latest commit before publishing.
 
-## Local checks
+Run the local helper checks before submitting a PR:
 
 ```sh
 node test.mjs
 ```
 
-## Deployment setup
-
-The repository owner must set the GitHub Actions secret `VAL_TOWN_API_KEY` to a Val Town API token with val read and write scope. Do not add Telegram or DeepSeek keys to GitHub: they remain in Val Town environment variables. The deployment workflow updates only the existing `main.ts` file, so its HTTP endpoint and SQLite data remain in place. Source edits made directly in the Val Town editor may be overwritten by the next merge.
+GitHub Actions are currently unavailable on this account because GitHub reports a billing lock. Therefore this repository has no mandatory CI check. The owner should review PRs carefully before merging; a merged change immediately affects the running bot. Changes made directly in the Val Town editor can be overwritten by the next merge. Roll back by reverting the merge commit on GitHub; the revert triggers another deployment.
